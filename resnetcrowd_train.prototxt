@@ -1,0 +1,397 @@
+name: "ResNetCrowd"
+
+layer {
+    name: "data"
+    type: "Data"
+    top: "data"
+    top: "label"
+    include {
+        phase: TRAIN
+    }
+    data_param {
+        source: "./examples/ResnetCrowd/resnetcrowd_train_lmdb"
+        batch_size: 20
+        backend: LMDB
+    }
+}
+
+layer {
+    name: "data"
+    type: "Data"
+    top: "data"
+    top: "label"
+    include {
+        phase: TEST
+    }
+    data_param {
+        source: "./examples/ResnetCrowd/resnetcrowd_val_lmdb"
+        batch_size: 5
+        backend: LMDB
+    }
+}
+
+layer {
+    name: "conv1"
+    bottom: "data"
+    top: "conv1"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 7
+        pad: 3
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    name: "conv1_relu"
+    bottom: "conv1"
+    top: "conv1_relu"
+    type: "ReLU"
+}
+
+layer {  
+  name: "pool1"  
+  type: "Pooling"  
+  bottom: "conv1_relu"  
+  top: "pool1"  
+  pooling_param {  
+    pool: MAX
+    kernel_size: 2  
+    stride: 2 
+  }  
+} 
+
+layer {
+    name: "bn1"
+    bottom: "pool1"
+    top: "bn1"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+	  use_global_stats:false
+    }
+}
+
+layer {
+    name: "scale1"
+    bottom: "bn1"
+    top: "scale1"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    name: "bn2"
+    bottom: "scale1"
+    top: "bn2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+	  use_global_stats:false
+    }
+    
+}
+
+layer {
+    name: "scale2"
+    bottom: "bn2"
+    top: "scale2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    name: "conv2"
+    bottom: "scale2"
+    top: "conv2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 3
+        pad: 2
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    name: "conv2_relu"
+    bottom: "conv2"
+    top: "conv2_relu"
+    type: "ReLU"
+}
+
+layer {
+    name: "bn3"
+    bottom: "conv2_relu"
+    top: "bn3"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9
+	  use_global_stats:false
+    }
+    
+}
+
+layer {
+    name: "scale3"
+    bottom: "bn3"
+    top: "scale3"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    name: "conv3"
+    bottom: "scale3"
+    top: "conv3"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 3
+        pad: 2
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    name: "conv3_relu"
+    bottom: "conv3"
+    top: "conv3_relu"
+    type: "ReLU"
+}
+
+layer {
+    name: "SUM1"
+    bottom: "scale1"
+    bottom: "conv3_relu"
+    top: "SUM1"
+    type: "Eltwise"
+    eltwise_param {
+        operation: SUM
+    }
+}
+
+layer {
+    name: "SUM1_relu"
+    bottom: "SUM1"
+    top: "SUM1_relu"
+    type: "ReLU"
+}
+
+layer {
+    name: "bn4"
+    bottom: "SUM1_relu"
+    top: "bn4"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9
+	  use_global_stats:false
+    }
+    
+}
+
+layer {
+    name: "scale4"
+    bottom: "bn4"
+    top: "scale4"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    name: "conv4"
+    bottom: "scale4"
+    top: "conv4"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 3
+        pad: 2
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    name: "conv4_relu"
+    bottom: "conv4"
+    top: "conv4_relu"
+    type: "ReLU"
+}
+
+layer {
+    name: "bn5"
+    bottom: "conv4_relu"
+    top: "bn5"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9
+	  use_global_stats:false
+    }
+    
+}
+
+layer {
+    name: "scale5"
+    bottom: "bn5"
+    top: "scale5"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    name: "conv5"
+    bottom: "scale5"
+    top: "conv5"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 3
+        pad: 2
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    name: "conv5_relu"
+    bottom: "conv5"
+    top: "conv5_relu"
+    type: "ReLU"
+}
+
+layer {
+    name: "SUM2"
+    bottom: "SUM1_relu"
+    bottom: "conv5_relu"
+    top: "SUM2"
+    type: "Eltwise"
+    eltwise_param {
+        operation: SUM
+    }
+}
+
+layer {
+    name: "SUM2_relu"
+    bottom: "SUM2"
+    top: "SUM2_relu"
+    type: "ReLU"
+}
+
+layer {  
+  name: "pool2"  
+  type: "Pooling"  
+  bottom: "SUM2_relu"  
+  top: "pool2"  
+  pooling_param {  
+    pool: AVE  
+    kernel_size: 7  
+    stride: 1  
+  }  
+} 
+
+layer {
+    name: "fc32"
+    bottom: "pool2"
+    top: "fc32"
+    type: "InnerProduct"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    inner_product_param {
+        num_output: 32
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+layer {
+    name: "fc1"
+    bottom: "fc32"
+    top: "fc1"
+    type: "InnerProduct"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    inner_product_param {
+        num_output: 1
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+layer {
+    name: "loss"
+    bottom: "fc1"
+    bottom: "label"
+	top: "loss"
+    type: "SigmoidCrossEntropyLoss"
+
+}
+
+layer {
+    name: "accuary"
+    bottom: "fc1"
+    bottom: "label"
+    top: "accuary"
+    type: "Accuracy"
+    include {
+        phase: TEST
+    }
+}
+
+

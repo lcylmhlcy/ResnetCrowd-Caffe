@@ -1,0 +1,379 @@
+name: "ResCrowd"
+layer {
+    name: "data"
+    type: "Data"
+    top: "data"
+    top: "label"
+    include {
+        phase: TRAIN
+    }
+    transform_param {
+        mirror: true
+    }
+    data_param {
+    source: "./examples/ResnetCrowd/resnetcrowd_train_lmdb"
+    batch_size: 5
+    backend: LMDB
+    }
+}
+layer {
+    name: "data"
+    type: "Data"
+    top: "data"
+    top: "label"
+    include {
+        phase: TEST
+    }
+    transform_param {
+        mirror: false
+    }
+    data_param {
+    source: "./examples/ResnetCrowd/resnetcrowd_val_lmdb"
+    batch_size: 5
+    backend: LMDB
+    }
+}
+
+layer {
+    bottom: "data"
+    top: "conv1"
+    name: "conv1"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 7
+        pad: 3
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "conv1"
+    top: "bn_conv1"
+    name: "bn_conv1"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+}
+
+layer {
+    bottom: "bn_conv1"
+    top: "scale_conv1"
+    name: "scale_conv1"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "scale_conv1"
+    top: "conv1_relu"
+    name: "conv1_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "conv1_relu"
+    top: "pool1"
+    name: "pool1"
+    type: "Pooling"
+    pooling_param {
+        kernel_size: 2
+        stride: 2
+        pool: MAX
+    }
+}
+
+layer {
+    bottom: "pool1"
+    top: "conv2"
+    name: "conv2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "conv2"
+    top: "bn_conv2"
+    name: "bn_conv2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "bn_conv2"
+    top: "scale_conv2"
+    name: "scale_conv2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "scale_conv2"
+    top: "conv2_relu"
+    name: "conv2_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "conv2_relu"
+    top: "conv3"
+    name: "conv3"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "conv3"
+    top: "bn_conv3"
+    name: "bn_conv3"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "bn_conv3"
+    top: "scale_conv3"
+    name: "scale_conv3"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "pool1"
+    bottom: "scale_conv3"
+    top: "SUM1"
+    name: "SUM1"
+    type: "Eltwise"
+    eltwise_param {
+        operation: SUM
+    }
+}
+
+layer {
+    bottom: "SUM1"
+    top: "SUM1_relu"
+    name: "SUM1_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "SUM1_relu"
+    top: "conv4"
+    name: "conv4"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "conv4"
+    top: "bn_conv4"
+    name: "bn_conv4"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "bn_conv4"
+    top: "scale_conv4"
+    name: "scale_conv4"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "scale_conv4"
+    top: "conv4_relu"
+    name: "conv4_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "conv4_relu"
+    top: "conv5"
+    name: "conv5"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "conv5"
+    top: "bn_conv5"
+    name: "bn_conv5"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "bn_conv5"
+    top: "scale_conv5"
+    name: "scale_conv5"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "SUM1_relu"
+    bottom: "scale_conv5"
+    top: "SUM2"
+    name: "SUM2"
+    type: "Eltwise"
+    eltwise_param {
+        operation: SUM
+    }
+}
+
+layer {
+    bottom: "SUM2"
+    top: "SUM2_relu"
+    name: "SUM2_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "SUM2_relu"
+    top: "pool2"
+    name: "pool2"
+    type: "Pooling"
+    pooling_param {
+        kernel_size: 7
+        stride: 1
+        pool: AVE
+    }
+}
+
+layer {
+    bottom: "pool2"
+    top: "fc32"
+    name: "fc32"
+    type: "InnerProduct"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    inner_product_param {
+        num_output: 32
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+layer {
+    bottom: "fc32"
+    top: "fc1"
+    name: "fc1"
+    type: "InnerProduct"
+    param {
+        lr_mult: 1
+        decay_mult: 1
+    }
+    param {
+        lr_mult: 2
+        decay_mult: 1
+    }
+    inner_product_param {
+        num_output: 1
+        weight_filler {
+            type: "xavier"
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+layer {
+    bottom: "fc1"
+    bottom: "label"
+    name: "loss"
+    type: "SigmoidCrossEntropyLoss"
+    top: "loss"
+}
+
+layer {
+    bottom: "fc1"
+    bottom: "label"
+    top: "accuary"
+    name: "accuray"
+    type: "Accuracy"
+    include {
+        phase: TEST
+    }
+}

@@ -1,0 +1,16 @@
+#net: "examples/ResnetCrowd/resnetcrowd_train.prototxt"
+net: "examples/ResnetCrowd/rescrowd_train.prototxt"
+test_iter: 25
+test_interval: 500
+base_lr: 0.001
+#momentum: 0.9
+type: "AdaGrad"
+weight_decay: 0.0001
+lr_policy: "inv"
+gamma: 0.0001
+power: 0.2
+display: 100
+max_iter: 10000
+snapshot: 5000
+snapshot_prefix: "examples/ResnetCrowd/rescrowd"
+solver_mode: GPU
